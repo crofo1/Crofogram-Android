@@ -40,7 +40,7 @@ jobs:
         run: |
           cat << 'EOF' > API_KEYS
           APP_ID=36848121
-          APP_HASH=9f06d30c9b25a1836c80215e23886cd8
+          APP_HASH="9f06d30c9b25a1836c80215e23886cd8"
           MAPS_V2_API=""
           SIGNING_KEY_STORE_PASSWORD=crofopassword123
           SIGNING_KEY_ALIAS=crofogram
