@@ -277,8 +277,7 @@ public class CrofoVaultManager {
         input.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
         input.setHintTextColor(Theme.getColor(Theme.key_dialogTextHint));
         input.setHint("••••");
-        AndroidUtilities.clearCursorDrawable(input);
-        container.addView(input, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+                container.addView(input, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
         builder.setView(container);
         builder.setPositiveButton("Kirish", (dialog, which) -> {
