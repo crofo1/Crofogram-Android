@@ -1,0 +1,91 @@
+name: Build Crofogram APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      flavor:
+        description: 'Build flavor (arm64 is faster, afat is universal)'
+        required: true
+        default: 'arm64'
+        type: choice
+        options:
+          - arm64
+          - afat
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Android NDK & CMake
+        run: |
+          echo "y" | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --install "ndk;21.4.7075529" "cmake;3.10.2.4988404"
+          echo "ANDROID_NDK_HOME=${ANDROID_SDK_ROOT}/ndk/21.4.7075529" >> $GITHUB_ENV
+
+      - name: Generate API_KEYS File
+        run: |
+          cat << 'EOF' > API_KEYS
+          APP_ID=36848121
+          APP_HASH=9f06d30c9b25a1836c80215e23886cd8
+          MAPS_V2_API=""
+          SIGNING_KEY_STORE_PASSWORD=crofopassword123
+          SIGNING_KEY_ALIAS=crofogram
+          SIGNING_KEY_PASSWORD=crofopassword123
+          EOF
+
+      - name: Grant Execute Permission for Gradlew
+        run: chmod +x gradlew
+
+      - name: Free Disk Space on Runner
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          df -h
+
+      - name: Build Crofogram Release APK
+        run: |
+          FLAVOR="${{ github.event.inputs.flavor || 'arm64' }}"
+          if [ "$FLAVOR" = "afat" ]; then
+            ./gradlew assembleAfatRelease --no-daemon --stacktrace
+          else
+            ./gradlew assembleArm64Release --no-daemon --stacktrace
+          fi
+
+      - name: Upload Crofogram APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Crofogram-APK
+          path: TMessagesProj/build/outputs/apk/**/*.apk
+
+      - name: Release Crofogram APK
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: Crofogram v1.0.${{ github.run_number }}
+          body: |
+            ## 🚀 Crofogram for Android
+            Avtomatik yangi versiya tayyorlandi!
+            - **Nomi**: Crofogram
+            - **Paket**: com.crofogram.messenger
+            - **Xususiyatlari**: Tablar, xabarlar himoyasi, ghost mode, maxsus sozlamalar
+          files: TMessagesProj/build/outputs/apk/**/*.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
