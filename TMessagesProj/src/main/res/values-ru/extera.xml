@@ -2,7 +2,7 @@
 
 <!--
 
- Это исходный код exteraGram для Android.
+ Это исходный код Crofogram для Android.
 
  Мы не запрещаем и не можем запретить использовать наш код,
  но имейте уважение и указывайте оригинального автора.
@@ -12,11 +12,11 @@
 -->
 
 <resources>
-    <string name="Preferences">Настройки exteraGram</string>
+    <string name="Preferences">Центр управления Crofogram</string>
 
     <!-- Main Menu -->
     <string name="Links">Ссылки</string>
-    <string name="AboutExteraDescription">Экспериментальный Telegram-клиент, основанный на официальном исходном коде!</string>
+    <string name="AboutExteraDescription">Crofogram — Конфиденциальный, быстрый и защищённый мессенджер нового поколения.</string>
     <string name="Channel">Канал</string>
     <string name="Crowdin">Перевод</string>
     <string name="SourceCode">Исходный код</string>
@@ -200,7 +200,7 @@
 
     <!-- Other -->
     <string name="RestartRequired">Перезапустите приложение, чтобы изменения вступили в силу.</string>
-    <string name="ResetSettingsBulletin">Настройки **exteraGram** сброшены.</string>
+    <string name="ResetSettingsBulletin">Настройки **Crofogram** сброшены.</string>
     <string name="UserNotFound">Пользователь с этим **ID** не найден.</string>
     <string name="PhotoCopied">Фото скопировано в буфер обмена.</string>
 
