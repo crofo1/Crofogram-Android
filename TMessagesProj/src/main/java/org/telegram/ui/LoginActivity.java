@@ -2206,25 +2206,12 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                 return false;
             });
 
-            TextView proxySettings = new TextView(context);
-            proxySettings.setPadding(AndroidUtilities.dp(34), 0, AndroidUtilities.dp(34), 0);
-            proxySettings.setGravity(Gravity.CENTER);
-            proxySettings.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            proxySettings.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
-
-            proxySettings.setText(LocaleController.getString("ProxySettings", R.string.ProxySettings));
-            proxySettings.setTextColor(Theme.getColor(Theme.key_featuredStickers_buttonText));
-            proxySettings.setBackgroundDrawable(Theme.createSimpleSelectorRoundRectDrawable(AndroidUtilities.dp(6), Theme.getColor(Theme.key_featuredStickers_addButton), Theme.getColor(Theme.key_featuredStickers_addButtonPressed)));
-
-            addView(proxySettings, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, 48, Gravity.BOTTOM, 16, 15, 16, 16));
-            proxySettings.setOnClickListener(view -> presentFragment(new ProxyListActivity()));
-
-            int bottomMargin = 72;
+            int bottomMargin = 0;
             if (newAccount && activityMode == MODE_LOGIN) {
                 syncContactsBox = new CheckBoxCell(context, 2);
                 syncContactsBox.setText(LocaleController.getString("SyncContacts", R.string.SyncContacts), "", syncContacts, false);
                 addView(syncContactsBox, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 16, 0, 16 + (LocaleController.isRTL && AndroidUtilities.isSmallScreen() ? 56 : 0), 0));
-                bottomMargin -= 24;
+                bottomMargin = 24;
                 syncContactsBox.setOnClickListener(v -> {
                     if (getParentActivity() == null) {
                         return;
@@ -2237,27 +2224,6 @@ public class LoginActivity extends BaseFragment implements NotificationCenter.No
                     } else {
                         BulletinFactory.of(slideViewsContainer, null).createSimpleBulletin(R.raw.contacts_sync_off, LocaleController.getString("SyncContactsOff", R.string.SyncContactsOff)).show();
                     }
-                });
-            }
-
-            if (activityMode == MODE_LOGIN) {
-                testBackendCheckBox = new CheckBoxCell(context, 2);
-                testBackendCheckBox.setText(LocaleController.getString(R.string.DebugTestBackend), "", testBackend, false);
-                addView(testBackendCheckBox, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.MATCH_PARENT, Gravity.LEFT | Gravity.TOP, 16, 0, 16 + (LocaleController.isRTL && AndroidUtilities.isSmallScreen() ? 56 : 0), 0));
-                bottomMargin -= 24;
-                testBackendCheckBox.setOnClickListener(v -> {
-                    if (getParentActivity() == null) {
-                        return;
-                    }
-                    CheckBoxCell cell = (CheckBoxCell) v;
-                    testBackend = !testBackend;
-                    cell.setChecked(testBackend, true);
-
-                    boolean testBackend = BuildVars.DEBUG_VERSION && getConnectionsManager().isTestBackend();
-                    if (testBackend != LoginActivity.this.testBackend) {
-                        getConnectionsManager().switchBackend(false);
-                    }
-                    loadCountries();
                 });
             }
             if (bottomMargin > 0 && !AndroidUtilities.isSmallScreen()) {
