@@ -828,11 +828,11 @@ public class MainPreferencesActivity extends BasePreferencesActivity {
 
 
 
-        crowdinRow = newRow();
+        crowdinRow = -1;
 
 
 
-        sourceCodeRow = newRow();
+        sourceCodeRow = -1;
 
 
 

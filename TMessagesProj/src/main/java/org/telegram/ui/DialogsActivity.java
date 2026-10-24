@@ -5565,6 +5565,13 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             scrollToTop();
 
         });
+        if (actionBar.getTitleTextView() != null) {
+            actionBar.getTitleTextView().setOnLongClickListener(v -> {
+                com.crofogram.messenger.CrofoVaultManager.promptOrOpenVault(DialogsActivity.this);
+                return true;
+            });
+        }
+
 
 
 
@@ -10346,7 +10353,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
         blockItem = otherItem.addSubItem(block, R.drawable.msg_block, LocaleController.getString("BlockUser", R.string.BlockUser));
 
-        hideDialogItem = otherItem.addSubItem(hide_dialog, R.drawable.msg_secret, "Yashirish (Seyf)");
+        // hideDialogItem moved to CrofoVaultActivity (secret)
 
 
 

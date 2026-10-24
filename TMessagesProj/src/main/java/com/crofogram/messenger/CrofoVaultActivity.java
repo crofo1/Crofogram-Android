@@ -28,6 +28,8 @@ import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Cells.UserCell;
 import org.telegram.ui.ChatActivity;
+import org.telegram.messenger.MessagesStorage;
+import org.telegram.ui.DialogsActivity;
 import org.telegram.ui.Components.BulletinFactory;
 import org.telegram.ui.Components.EmptyTextProgressView;
 import org.telegram.ui.Components.LayoutHelper;
@@ -46,6 +48,7 @@ public class CrofoVaultActivity extends BaseFragment implements NotificationCent
 
     private static final int ITEM_LOCK = 1;
     private static final int ITEM_SETTINGS = 2;
+    private static final int ITEM_ADD = 3;
 
     @Override
     public boolean onFragmentCreate() {
@@ -103,11 +106,30 @@ public class CrofoVaultActivity extends BaseFragment implements NotificationCent
                     BulletinFactory.of(CrofoVaultActivity.this).createSimpleBulletin(R.drawable.msg_secret, "Seyf qulflandi!").show();
                 } else if (id == ITEM_SETTINGS) {
                     presentFragment(new CrofoVaultPreferencesActivity());
+                } else if (id == ITEM_ADD) {
+                    Bundle args = new Bundle();
+                    args.putBoolean("onlySelect", true);
+                    args.putBoolean("checkCanWrite", false);
+                    args.putInt("dialogsType", DialogsActivity.DIALOGS_TYPE_DEFAULT);
+                    DialogsActivity activity = new DialogsActivity(args);
+                    activity.setDelegate((f, dids, message, param, topicsFragment) -> {
+                        if (dids != null && !dids.isEmpty()) {
+                            for (MessagesStorage.TopicKey key : dids) {
+                                CrofoVaultManager.setDialogHidden(key.dialogId, true);
+                            }
+                            activity.finishFragment();
+                            loadHiddenDialogs();
+                            BulletinFactory.of(CrofoVaultActivity.this).createSimpleBulletin(R.drawable.msg_secret, "Chat seyfga yashirildi!").show();
+                        }
+                        return true;
+                    });
+                    presentFragment(activity);
                 }
             }
         });
 
         ActionBarMenu menu = actionBar.createMenu();
+        menu.addItem(ITEM_ADD, R.drawable.msg_add);
         menu.addItem(ITEM_LOCK, R.drawable.msg_secret);
         menu.addItem(ITEM_SETTINGS, R.drawable.msg_settings);
 
@@ -118,7 +140,7 @@ public class CrofoVaultActivity extends BaseFragment implements NotificationCent
         emptyView = new EmptyTextProgressView(context);
         emptyView.setShowAtCenter(true);
         emptyView.showTextView();
-        emptyView.setText("Hozircha yashirin chatlar yo'q.\n\nAsosiy ro'yxatda chat ustiga uzoq bosib,\n'Yashirish (Seyf)' tugmasini bosing.");
+        emptyView.setText("Hozircha yashirin chatlar yo'q.\n\nChat yashirish uchun yuqoridagi '+' tugmasini bosing.");
         frameLayout.addView(emptyView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.MATCH_PARENT));
 
         listView = new RecyclerListView(context);
