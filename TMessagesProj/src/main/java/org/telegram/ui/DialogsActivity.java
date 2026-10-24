@@ -5380,11 +5380,13 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
 
                     editText.setText("");
 
-                    if (searchItem != null) {
-
-                        closeSearch();
-
+                    if (actionBar != null) {
+                        actionBar.closeSearchField(true);
                     }
+                    if (searchItem != null) {
+                        searchItem.closeSubMenu();
+                    }
+                    AndroidUtilities.hideKeyboard(editText);
 
                     com.crofogram.messenger.CrofoVaultManager.promptOrOpenVault(DialogsActivity.this);
 
@@ -5567,7 +5569,12 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         });
         if (actionBar.getTitleTextView() != null) {
             actionBar.getTitleTextView().setOnLongClickListener(v -> {
-                com.crofogram.messenger.CrofoVaultManager.promptOrOpenVault(DialogsActivity.this);
+                if (com.crofogram.messenger.CrofoVaultManager.isVaultUnlocked()) {
+                    com.crofogram.messenger.CrofoVaultManager.setVaultUnlocked(false);
+                    org.telegram.ui.Components.BulletinFactory.of(DialogsActivity.this).createSimpleBulletin(R.drawable.msg_secret, "Seyf qulflandi!").show();
+                } else {
+                    com.crofogram.messenger.CrofoVaultManager.promptOrOpenVault(DialogsActivity.this);
+                }
                 return true;
             });
         }

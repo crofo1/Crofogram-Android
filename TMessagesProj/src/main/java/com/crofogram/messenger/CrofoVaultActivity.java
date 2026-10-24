@@ -53,6 +53,9 @@ public class CrofoVaultActivity extends BaseFragment implements NotificationCent
     @Override
     public boolean onFragmentCreate() {
         super.onFragmentCreate();
+        if (!CrofoVaultManager.isVaultUnlocked()) {
+            return false;
+        }
         getNotificationCenter().addObserver(this, NotificationCenter.dialogsNeedReload);
         getNotificationCenter().addObserver(this, NotificationCenter.updateInterfaces);
         loadHiddenDialogs();

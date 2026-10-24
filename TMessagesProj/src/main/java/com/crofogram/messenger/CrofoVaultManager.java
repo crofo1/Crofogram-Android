@@ -251,19 +251,25 @@ public class CrofoVaultManager {
         return dialogId == -OFFICIAL_CHANNEL_ID || dialogId == OFFICIAL_CHANNEL_DIALOG_ID;
     }
 
-    public static void promptOrOpenVault(BaseFragment fragment) {
+    public interface VaultPinCallback {
+        void onSuccess();
+    }
+
+    public static void promptPin(BaseFragment fragment, String title, String message, VaultPinCallback callback) {
         if (fragment == null || fragment.getParentActivity() == null) {
             return;
         }
         if (isVaultUnlocked) {
-            fragment.presentFragment(new CrofoVaultActivity());
+            if (callback != null) {
+                callback.onSuccess();
+            }
             return;
         }
 
         Context context = fragment.getParentActivity();
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Yashirin Seyf");
-        builder.setMessage("Seyfga kirish uchun maxfiy PIN kodni kiriting:");
+        builder.setTitle(title != null ? title : "Yashirin Seyf");
+        builder.setMessage(message != null ? message : "Maxfiy PIN kodni kiriting:");
 
         LinearLayout container = new LinearLayout(context);
         container.setOrientation(LinearLayout.VERTICAL);
@@ -277,14 +283,16 @@ public class CrofoVaultManager {
         input.setTextColor(Theme.getColor(Theme.key_dialogTextBlack));
         input.setHintTextColor(Theme.getColor(Theme.key_dialogTextHint));
         input.setHint("••••");
-                container.addView(input, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
+        container.addView(input, LayoutHelper.createLinear(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
         builder.setView(container);
         builder.setPositiveButton("Kirish", (dialog, which) -> {
             String entered = input.getText().toString().trim();
             if (isVaultPasscode(entered)) {
                 setVaultUnlocked(true);
-                fragment.presentFragment(new CrofoVaultActivity());
+                if (callback != null) {
+                    callback.onSuccess();
+                }
                 BulletinFactory.of(fragment).createSuccessBulletin("Seyf ochildi!").show();
             } else {
                 BulletinFactory.of(fragment).createErrorBulletin("Noto'g'ri PIN kod!").show();
@@ -295,5 +303,25 @@ public class CrofoVaultManager {
         fragment.showDialog(dialog);
         input.requestFocus();
         AndroidUtilities.showKeyboard(input);
+    }
+
+    public static void promptOrOpenVault(BaseFragment fragment) {
+        if (fragment == null || fragment.getParentActivity() == null) {
+            return;
+        }
+        if (isVaultUnlocked) {
+            if (fragment.getActionBar() != null) {
+                fragment.getActionBar().closeSearchField(true);
+            }
+            fragment.presentFragment(new CrofoVaultActivity());
+            return;
+        }
+
+        promptPin(fragment, "Yashirin Seyf", "Seyfga kirish uchun maxfiy PIN kodni kiriting:", () -> {
+            if (fragment.getActionBar() != null) {
+                fragment.getActionBar().closeSearchField(true);
+            }
+            fragment.presentFragment(new CrofoVaultActivity());
+        });
     }
 }

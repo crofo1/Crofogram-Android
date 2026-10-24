@@ -918,11 +918,13 @@ public class MainPreferencesActivity extends BasePreferencesActivity {
 
         } else if (position == vaultRow) {
 
-
-
-            presentFragment(new CrofoVaultPreferencesActivity());
-
-
+            if (!com.crofogram.messenger.CrofoVaultManager.isVaultUnlocked()) {
+                com.crofogram.messenger.CrofoVaultManager.promptPin(this, "Yashirin Seyf", "Sozlamalarga kirish uchun maxfiy PIN kodni kiriting:", () -> {
+                    presentFragment(new CrofoVaultPreferencesActivity());
+                });
+            } else {
+                presentFragment(new CrofoVaultPreferencesActivity());
+            }
 
         } else if (position == otherRow) {
 
